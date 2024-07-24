@@ -110,10 +110,46 @@ public class Model extends Observable {
         boolean changed;
         changed = false;
 
-        // TODO: Modify this.board (and perhaps this.score) to account
-        // for the tilt to the Side SIDE. If the board changed, set the
-        // changed local variable to true.
+        this.board.setViewingPerspective(side);
+        for (int col = size() - 1; col >= 0; col -= 1) {
+            boolean[] merged = new boolean[size()];
 
+            for (int row = size() - 1; row >= 0; row -= 1) {
+                Tile t = board.tile(col, row);
+                boolean this_tile_changed = false;
+
+                if (t != null) {
+                    int null_tiles = 0;
+
+                    for (int next_row = row + 1; next_row < size(); next_row += 1) {
+                        Tile next_t = board.tile(col, next_row);
+
+                        if (next_t != null) {
+                            if (next_t.value() == t.value()) {
+                                if (!merged[next_row]) {
+                                    board.move(col, next_row, t);
+                                    merged[next_row] = true;
+                                    score += t.value() * 2;
+                                } else {
+                                    board.move(col, next_row - 1, t);
+                                }
+                                changed = this_tile_changed = true;
+                            }
+                            break;
+                        } else {
+                            null_tiles += 1;
+                        }
+                    }
+
+                    if (!this_tile_changed && null_tiles > 0) {
+                        board.move(col, row + null_tiles, t);
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        this.board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
@@ -181,7 +217,7 @@ public class Model extends Observable {
             for (int row = 0; row < b.size(); row++) {
                 for (int column = 0; column < b.size() - 1; column++) {
                     Tile t = b.tile(column, row);
-                    Tile next_tile = b.tile (column + 1, row);
+                    Tile next_tile = b.tile(column + 1, row);
                     if (t.value() == next_tile.value()) {
                         return true;
                     }
