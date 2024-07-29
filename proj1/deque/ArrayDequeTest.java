@@ -16,24 +16,24 @@ public class ArrayDequeTest {
      * && is the "and" operation. */
     public void addIsEmptySizeTest() {
 
-        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        ArrayDeque<String> ad = new ArrayDeque<String>();
 
-		assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
-		lld1.addFirst("front");
+		assertTrue("A newly initialized LLDeque should be empty", ad.isEmpty());
+		ad.addFirst("front");
 
 		// The && operator is the same as "and" in Python.
 		// It's a binary operator that returns true if both arguments true, and false otherwise.
-        assertEquals(1, lld1.size());
-        assertFalse("lld1 should now contain 1 item", lld1.isEmpty());
+        assertEquals(1, ad.size());
+        assertFalse("lld1 should now contain 1 item", ad.isEmpty());
 
-		lld1.addLast("middle");
-		assertEquals(2, lld1.size());
+		ad.addLast("middle");
+		assertEquals(2, ad.size());
 
-		lld1.addLast("back");
-		assertEquals(3, lld1.size());
+		ad.addLast("back");
+		assertEquals(3, ad.size());
 
 		System.out.println("Printing out deque: ");
-		lld1.printDeque();
+		ad.printDeque();
     }
 
     @Test
@@ -170,7 +170,7 @@ public class ArrayDequeTest {
         }
     }
 
-    private ArrayDeque<Integer> arrayDequeFromArray(Integer[] values) {
+    public ArrayDeque<Integer> arrayDequeFromArray(Integer[] values) {
         ArrayDeque<Integer> ad = new ArrayDeque<>();
         for (Integer item : values) {
             ad.addLast(item);
@@ -197,10 +197,15 @@ public class ArrayDequeTest {
         Integer[] notEqualsShorter = {0, 1};
         Integer[] notEqualsLonger = {0, 1, 2, 3};
         ArrayDeque<Integer> ad = arrayDequeFromArray(equalsValues);
+        LinkedListDeque<Integer> lld = new LinkedListDequeTest().linkedListDequeFromArray(equalsValues);
 
         assertEquals(ad, arrayDequeFromArray(equalsValues));
+        assertEquals(lld, arrayDequeFromArray(equalsValues));
         assertNotEquals(ad, arrayDequeFromArray(notEqualsValues));
+        assertNotEquals(lld, arrayDequeFromArray(notEqualsValues));
         assertNotEquals(ad, arrayDequeFromArray(notEqualsShorter));
+        assertNotEquals(lld, arrayDequeFromArray(notEqualsShorter));
         assertNotEquals(ad, arrayDequeFromArray(notEqualsLonger));
+        assertNotEquals(lld, arrayDequeFromArray(notEqualsLonger));
     }
 }

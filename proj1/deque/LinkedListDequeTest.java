@@ -170,7 +170,7 @@ public class LinkedListDequeTest {
         }
     }
 
-    private LinkedListDeque<Integer> linkedListDequeFromArray(Integer[] values ) {
+    public LinkedListDeque<Integer> linkedListDequeFromArray(Integer[] values ) {
         LinkedListDeque<Integer> lld = new LinkedListDeque<>();
         for (Integer item : values) {
             lld.addLast(item);
@@ -197,10 +197,15 @@ public class LinkedListDequeTest {
         Integer[] notEqualsShorter = {0, 1};
         Integer[] notEqualsLonger = {0, 1, 2, 3};
         LinkedListDeque<Integer> lld = linkedListDequeFromArray(equalsValues);
+        ArrayDeque<Integer> ad = new ArrayDequeTest().arrayDequeFromArray(equalsValues);
 
         assertEquals(lld, linkedListDequeFromArray(equalsValues));
+        assertEquals(ad, linkedListDequeFromArray(equalsValues));
         assertNotEquals(lld, linkedListDequeFromArray(notEqualsValues));
+        assertNotEquals(ad, linkedListDequeFromArray(notEqualsValues));
         assertNotEquals(lld, linkedListDequeFromArray(notEqualsShorter));
+        assertNotEquals(ad, linkedListDequeFromArray(notEqualsShorter));
         assertNotEquals(lld, linkedListDequeFromArray(notEqualsLonger));
+        assertNotEquals(ad, linkedListDequeFromArray(notEqualsLonger));
     }
 }

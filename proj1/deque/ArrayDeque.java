@@ -126,13 +126,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
             return true;
-        } else if (obj instanceof ArrayDeque) {
-            Iterator i1 = this.iterator();
-            Iterator i2 = ((ArrayDeque) obj).iterator();
-            while (i1.hasNext() && i2.hasNext() && i1.next() == i2.next()) {
-                continue;
+        } else if (obj instanceof Deque && size() == ((Deque<?>) obj).size()) {
+            for (int i = 0; i < size(); i += 1) {
+                if (get(i) != ((Deque<?>) obj).get(i)) {
+                    return false;
+                }
             }
-            return !(i1.hasNext() || i2.hasNext());
+            return true;
         }
         return false;
     }
