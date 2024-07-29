@@ -169,4 +169,30 @@ public class ArrayDequeTest {
             assertEquals(i, (int) lld.get(i));
         }
     }
+
+    @Test
+    public void iteratorTest() {
+        Integer[] values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ArrayDeque<Integer> lld = new ArrayDeque<>(values);
+
+        int i = 0;
+        for (int v : lld) {
+            assertEquals(i, v);
+            i += 1;
+        }
+    }
+
+    @Test
+    public void equalsTest() {
+        Integer[] equalsValues = {0, 1, 2};
+        Integer[] notEqualsValues = {1, 2, 3};
+        Integer[] notEqualsShorter = {0, 1};
+        Integer[] notEqualsLonger = {0, 1, 2, 3};
+        ArrayDeque<Integer> ad = new ArrayDeque<>(equalsValues);
+
+        assertEquals(ad, new ArrayDeque<>(equalsValues));
+        assertNotEquals(ad, new ArrayDeque<>(notEqualsValues));
+        assertNotEquals(ad, new ArrayDeque<>(notEqualsShorter));
+        assertNotEquals(ad, new ArrayDeque<>(notEqualsLonger));
+    }
 }

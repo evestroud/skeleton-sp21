@@ -169,4 +169,30 @@ public class LinkedListDequeTest {
             assertEquals(i, (int) lld.getRecursive(i));
         }
     }
+
+    @Test
+    public void iteratorTest() {
+        Integer[] values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>(values);
+
+        int i = 0;
+        for (int v : lld) {
+            assertEquals(i, v);
+            i += 1;
+        }
+    }
+
+    @Test
+    public void equalsTest() {
+        Integer[] equalsValues = {0, 1, 2};
+        Integer[] notEqualsValues = {1, 2, 3};
+        Integer[] notEqualsShorter = {0, 1};
+        Integer[] notEqualsLonger = {0, 1, 2, 3};
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>(equalsValues);
+
+        assertEquals(lld, new LinkedListDeque<>(equalsValues));
+        assertNotEquals(lld, new LinkedListDeque<>(notEqualsValues));
+        assertNotEquals(lld, new LinkedListDeque<>(notEqualsShorter));
+        assertNotEquals(lld, new LinkedListDeque<>(notEqualsLonger));
+    }
 }
