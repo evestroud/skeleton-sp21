@@ -170,10 +170,18 @@ public class LinkedListDequeTest {
         }
     }
 
+    private LinkedListDeque<Integer> linkedListDequeFromArray(Integer[] values ) {
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+        for (Integer item : values) {
+            lld.addLast(item);
+        }
+        return lld;
+    }
+
     @Test
     public void iteratorTest() {
         Integer[] values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        LinkedListDeque<Integer> lld = new LinkedListDeque<>(values);
+        LinkedListDeque<Integer> lld = linkedListDequeFromArray(values);
 
         int i = 0;
         for (int v : lld) {
@@ -188,11 +196,11 @@ public class LinkedListDequeTest {
         Integer[] notEqualsValues = {1, 2, 3};
         Integer[] notEqualsShorter = {0, 1};
         Integer[] notEqualsLonger = {0, 1, 2, 3};
-        LinkedListDeque<Integer> lld = new LinkedListDeque<>(equalsValues);
+        LinkedListDeque<Integer> lld = linkedListDequeFromArray(equalsValues);
 
-        assertEquals(lld, new LinkedListDeque<>(equalsValues));
-        assertNotEquals(lld, new LinkedListDeque<>(notEqualsValues));
-        assertNotEquals(lld, new LinkedListDeque<>(notEqualsShorter));
-        assertNotEquals(lld, new LinkedListDeque<>(notEqualsLonger));
+        assertEquals(lld, linkedListDequeFromArray(equalsValues));
+        assertNotEquals(lld, linkedListDequeFromArray(notEqualsValues));
+        assertNotEquals(lld, linkedListDequeFromArray(notEqualsShorter));
+        assertNotEquals(lld, linkedListDequeFromArray(notEqualsLonger));
     }
 }

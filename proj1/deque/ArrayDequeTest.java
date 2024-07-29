@@ -170,10 +170,18 @@ public class ArrayDequeTest {
         }
     }
 
+    private ArrayDeque<Integer> arrayDequeFromArray(Integer[] values) {
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        for (Integer item : values) {
+            ad.addLast(item);
+        }
+        return ad;
+    }
+
     @Test
     public void iteratorTest() {
         Integer[] values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ArrayDeque<Integer> lld = new ArrayDeque<>(values);
+        ArrayDeque<Integer> lld = arrayDequeFromArray(values);
 
         int i = 0;
         for (int v : lld) {
@@ -188,11 +196,11 @@ public class ArrayDequeTest {
         Integer[] notEqualsValues = {1, 2, 3};
         Integer[] notEqualsShorter = {0, 1};
         Integer[] notEqualsLonger = {0, 1, 2, 3};
-        ArrayDeque<Integer> ad = new ArrayDeque<>(equalsValues);
+        ArrayDeque<Integer> ad = arrayDequeFromArray(equalsValues);
 
-        assertEquals(ad, new ArrayDeque<>(equalsValues));
-        assertNotEquals(ad, new ArrayDeque<>(notEqualsValues));
-        assertNotEquals(ad, new ArrayDeque<>(notEqualsShorter));
-        assertNotEquals(ad, new ArrayDeque<>(notEqualsLonger));
+        assertEquals(ad, arrayDequeFromArray(equalsValues));
+        assertNotEquals(ad, arrayDequeFromArray(notEqualsValues));
+        assertNotEquals(ad, arrayDequeFromArray(notEqualsShorter));
+        assertNotEquals(ad, arrayDequeFromArray(notEqualsLonger));
     }
 }

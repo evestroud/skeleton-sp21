@@ -16,15 +16,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size = 0;
     }
 
-    public ArrayDeque(T[] items) {
-        values = (T[]) new Object[8];
-        size = 0;
-
-        for (T item: items) {
-            addLast(item);
-        }
-    }
-
     private void resize(int newSize) {
         T[] newArray = (T[]) new Object[newSize];
 
