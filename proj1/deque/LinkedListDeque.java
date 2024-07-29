@@ -96,10 +96,16 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         sentinel.next = sentinel.next.next;
         size -= 1;
 
+        // unlink removed node for garbage collection
+        T value = first.value;
+        first.value = null;
+        first.next = null;
+        first.prev = null;
+
         if (size == 0) {
             sentinel.prev = sentinel;
         }
-        return first.value;
+        return value;
     }
 
     @Override
@@ -112,10 +118,16 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         sentinel.prev = sentinel.prev.prev;
         size -= 1;
 
+        // unlink removed node for garbage collection
+        T value = last.value;
+        last.value = null;
+        last.next = null;
+        last.prev = null;
+
         if (size == 0) {
             sentinel.next = sentinel;
         }
-        return last.value;
+        return value;
     }
 
     @Override
