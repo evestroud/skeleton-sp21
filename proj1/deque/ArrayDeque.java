@@ -25,18 +25,18 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
-    private void resize(int new_size) {
-        T[] new_array = (T[]) new Object[new_size];
+    private void resize(int newSize) {
+        T[] newArray = (T[]) new Object[newSize];
 
         // Account for wrapping
         if (startIndex + size > values.length) {
             int offset = values.length - startIndex;
-            System.arraycopy(values, startIndex, new_array, 0, offset);
-            System.arraycopy(values, 0, new_array, offset, size - offset);
+            System.arraycopy(values, startIndex, newArray, 0, offset);
+            System.arraycopy(values, 0, newArray, offset, size - offset);
         } else {
-            System.arraycopy(values, startIndex, new_array, 0, size);
+            System.arraycopy(values, startIndex, newArray, 0, size);
         }
-        values = new_array;
+        values = newArray;
         startIndex = 0;
     }
 
