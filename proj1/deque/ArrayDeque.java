@@ -99,7 +99,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     public T removeLast() {
         if (size == 0) {
             return null;
-        } else if (size > MIN_SHRINK_SIZE && size < values.length / USAGE_FACTOR) {
+        } else if (size >= MIN_SHRINK_SIZE && size <= values.length / USAGE_FACTOR) {
             resize(values.length / USAGE_FACTOR);
         }
 
