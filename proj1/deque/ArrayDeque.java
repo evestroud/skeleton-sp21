@@ -70,11 +70,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public void printDeque() {
-        for (int i = startIndex; i != startIndex + size; i += 1) {
-            if (i == values.length) {
-                i = 0;
-            }
-            System.out.print(values[i]);
+        for (int i = 0; i < size; i += 1) {
+            System.out.print(get(i));
             System.out.print(" ");
         }
         System.out.print("\n");
@@ -119,7 +116,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     @Override
     public T get(int index) {
         int adjustedIndex =
-                startIndex + index > values.length
+                startIndex + index >= values.length
                         ? startIndex + index - values.length
                         : startIndex + index;
         return values[adjustedIndex];
