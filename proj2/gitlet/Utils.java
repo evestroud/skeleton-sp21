@@ -111,6 +111,16 @@ class Utils {
         return new String(readContents(file), StandardCharsets.UTF_8);
     }
 
+    /** Create a new file from a File. */
+    static void createFile(File file) {
+        try {
+            file.createNewFile();
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
+
     /** Write the result of concatenating the bytes in CONTENTS to FILE,
      *  creating or overwriting it as needed.  Each object in CONTENTS may be
      *  either a String or a byte array.  Throws IllegalArgumentException
@@ -120,6 +130,9 @@ class Utils {
             if (file.isDirectory()) {
                 throw
                     new IllegalArgumentException("cannot overwrite directory");
+            }
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdir();
             }
             BufferedOutputStream str =
                 new BufferedOutputStream(Files.newOutputStream(file.toPath()));
@@ -190,18 +203,25 @@ class Utils {
 
     /* OTHER FILE UTILITIES */
 
-    /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+    /** Return the concatenation of FIRST and OTHERS into a File designator,
+     *  analogous to the {@link java.nio.file.Paths#get(String, String[])}
      *  method. */
     static File join(String first, String... others) {
         return Paths.get(first, others).toFile();
     }
 
-    /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+    /** Return the concatenation of FIRST and OTHERS into a File designator,
+     *  analogous to the {@link java.nio.file.Paths#get(String, String[])}
      *  method. */
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();
+    }
+
+    static File getFileFromHash(String hash) {
+        String dirName = hash.substring(0, 2);
+        String fileName = hash.substring(2);
+        File dir = join(Repository.OBJECTS_DIR, dirName);
+        return join(dir, fileName);
     }
 
 
