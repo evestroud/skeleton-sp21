@@ -1,5 +1,6 @@
 package gitlet;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class Index implements Dumpable {
 
     /** Returns a set of all the files currently tracked. */
     public Set<String> getFiles() {
-        return files.keySet();
+        return new HashSet<>(files.keySet());
     }
 
     /** Returns whether the index contains a file with the name fileName. */
@@ -35,7 +36,7 @@ public class Index implements Dumpable {
 
     /** Returns whether fileName is tracked (staged or committed) by the current repository. */
     public boolean isTracked(String fileName) {
-        return contains(fileName) && !files.get(fileName)[1].isEmpty() && !files.get(fileName)[2].isEmpty();
+        return contains(fileName) && (!files.get(fileName)[1].isEmpty() || !files.get(fileName)[2].isEmpty());
     }
 
     /** Adds a new file to the index, or updates the index if the file is already present.
@@ -53,11 +54,20 @@ public class Index implements Dumpable {
     }
 
     /** Returns whether the working directory version of a file has been modified
-     * relative to the staged and repository versions. */
-    public boolean modified(String fileName) {
+     * relative to the staged version. */
+    public boolean isModified(String fileName) {
         assert contains(fileName);
         String[] versions = files.get(fileName);
-        return !versions[0].equals(versions[1]) || !versions[0].equals(versions[2]);
+        return !versions[0].equals(versions[1]);
+    }
+
+    public boolean changesStaged() {
+        for (String file : files.keySet()) {
+            if (!files.get(file)[1].equals(files.get(file)[2])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Update the version of a tracked file in the working directory. Called
@@ -67,8 +77,13 @@ public class Index implements Dumpable {
      * @param hash Hash of the file contents.
      */
     public void updateFile(String fileName, String hash) {
-        assert contains(fileName);
-        files.get(fileName)[0] = hash;
+        if (!contains(fileName)) {
+            files.put(fileName, new String[] {hash, "", ""});
+        } else if (hash.isEmpty() && !isTracked(fileName)) {
+            files.remove(fileName);
+        } else {
+            files.get(fileName)[0] = hash;
+        }
     }
 
     public void rmFile(String fileName) {
@@ -82,7 +97,10 @@ public class Index implements Dumpable {
     public Map<String, String> getStaged() {
         Map<String, String> staged = new HashMap<>();
         for (String file: files.keySet()) {
-            staged.put(file, files.get(file)[1]);
+            String stagedHash = files.get(file)[1];
+            if (!stagedHash.isEmpty()) {
+                staged.put(file, files.get(file)[1]);
+            }
         }
         return staged;
     }
@@ -91,11 +109,8 @@ public class Index implements Dumpable {
     /** Updates the repo version of the file to match the staged version.
      * Used when committing. */
     void commitStaged() {
-        // TODO figure out how rm is gonna work.
         for (String file: files.keySet()) {
-            if (!files.get(file)[1].isEmpty()) {
-                files.get(file)[2] = files.get(file)[1];
-            }
+            files.get(file)[2] = files.get(file)[1];
         }
     }
 

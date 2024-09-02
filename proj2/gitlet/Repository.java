@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.util.Set;
+
 import static gitlet.Utils.*;
 
 /** Represents a gitlet repository. Contains static methods for performing Gitlet
@@ -84,16 +86,15 @@ public class Repository {
      */
     public static void rm(String fileName) {
         File file = join(CWD, fileName);
-        if (!file.exists()) {
-            Utils.message("File does not exist.");
-            System.exit(0);
-        }
-
         Index index = Utils.readObject(INDEX, Index.class);
         if (index.isTracked(fileName)) {
             index.rmFile(fileName);
-            Utils.restrictedDelete(file);
+            if (file.exists()) {
+                Utils.restrictedDelete(file);
+            }
             Utils.writeObject(INDEX, index);
+        } else if (!file.exists()) {
+            Utils.message("File does not exist.");
         }
     }
 
@@ -103,7 +104,7 @@ public class Repository {
      */
     public static void commit(String commitMessage) {
         Index index = Utils.readObject(INDEX, Index.class);
-        if (index.getStaged().isEmpty()){
+        if (!index.changesStaged()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
         }
@@ -118,13 +119,15 @@ public class Repository {
         Utils.writeContents(branchFile, commit.hash);
         index.commitStaged();
         Utils.writeObject(INDEX, index);
+        updateIndex();
     }
 
     /** Update the working directory versions of all files. */
     public static void updateIndex() {
         Index index = Utils.readObject(INDEX, Index.class);
-        // TODO search working directory for untracked files
-        for (String fileName : index.getFiles()) {
+        Set<String> filesToUpdate = index.getFiles();
+        filesToUpdate.addAll(plainFilenamesIn(CWD));
+        for (String fileName : filesToUpdate) {
             File file = join(CWD, fileName);
             if (!file.exists()) {
                 index.updateFile(fileName, "");

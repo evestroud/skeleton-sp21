@@ -29,6 +29,7 @@ public class Main {
 
         switch (command) {
             case "add": {
+                // TODO handle invalid files (including '.' ?)
                 validateNumArgs(args, 2, 2);
                 String fileName = args[1];
                 Repository.add(fileName);
