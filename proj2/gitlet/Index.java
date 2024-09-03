@@ -34,11 +34,6 @@ public class Index implements Dumpable {
         return files.containsKey(fileName);
     }
 
-    /** Returns whether fileName is tracked (staged or committed) by the current repository. */
-    public boolean isTracked(String fileName) {
-        return contains(fileName) && (!files.get(fileName)[1].isEmpty() || !files.get(fileName)[2].isEmpty());
-    }
-
     /** Adds a new file to the index, or updates the index if the file is already present.
      *
      * @param fileName Name of the file to add.
@@ -51,14 +46,6 @@ public class Index implements Dumpable {
         } else {
             files.put(fileName, new String[] {hash, hash, ""});
         }
-    }
-
-    /** Returns whether the working directory version of a file has been modified
-     * relative to the staged version. */
-    public boolean isModified(String fileName) {
-        assert contains(fileName);
-        String[] versions = files.get(fileName);
-        return !versions[0].equals(versions[1]);
     }
 
     public boolean changesStaged() {
@@ -92,19 +79,79 @@ public class Index implements Dumpable {
         files.get(fileName)[1] = "";
     }
 
-    /** Returns a map with file names as keys and the staged versions of those files
-     * in the repository as values. Used when committing. */
-    public Map<String, String> getStaged() {
+    /** Returns a map of staged modifications to files in the repository, with file names as keys and the staged
+     *  versions of those files in the repository as values. Used when committing. */
+    public Map<String, String> getStagedChanges() {
         Map<String, String> staged = new TreeMap<>();
         for (String file: files.keySet()) {
-            String stagedHash = files.get(file)[1];
-            if (!stagedHash.isEmpty()) {
+            if (isStaged(file)) {
                 staged.put(file, files.get(file)[1]);
             }
         }
         return staged;
     }
 
+    /** Returns whether a file has been staged. */
+    public boolean isStaged(String file) {
+        String stagedHash = files.get(file)[1];
+        String commitHash = files.get(file)[2];
+        return !stagedHash.isEmpty() && !stagedHash.equals(commitHash);
+    }
+
+    /** Returns a map of staged removals of files in the repository, with file names as keys and the staged
+     *  versions (all empty strings in this case) of those files in the repository as values. Used when committing. */
+    public Map<String, String> getStagedRemovals() {
+        Map<String, String> removed = new TreeMap<>();
+        for (String file: files.keySet()) {
+            if (isRemoved(file)) {
+                removed.put(file, files.get(file)[1]);
+            }
+        }
+        return removed;
+    }
+
+    /** Returns whether a file has had its removal staged. */
+    public boolean isRemoved(String file) {
+        String stagedHash = files.get(file)[1];
+        String commitHash = files.get(file)[2];
+        return stagedHash.isEmpty() && !stagedHash.equals(commitHash);
+    }
+
+    /** Returns a map of unstaged modifications to files in the repository, with file names as keys and the unstaged
+     *  versions of those files in the repository as values. Used when committing. */
+    public Map<String, String> getUnstagedChanges() {
+        Map<String, String> unstaged = new TreeMap<>();
+        for (String file: files.keySet()) {
+            if (isTracked(file) && hasUnstagedChanges(file)) {
+                unstaged.put(file, files.get(file)[0]);
+            }
+        }
+        return unstaged;
+    }
+
+    /** Returns whether a file has unstaged changes. */
+    public boolean hasUnstagedChanges(String file) {
+        String workingHash = files.get(file)[0];
+        String stagedHash = files.get(file)[1];
+        return !workingHash.equals(stagedHash);
+    }
+
+    /** Returns a map of untracked files to files in the repository, with file names as keys and the working directory
+     *  versions of those files in the repository as values. Used when committing. */
+    public Map<String, String> getUntrackedFiles() {
+        Map<String, String> untracked = new TreeMap<>();
+        for (String file: files.keySet()) {
+            if (!isTracked(file)) {
+                untracked.put(file, files.get(file)[0]);
+            }
+        }
+        return untracked;
+    }
+
+    /** Returns whether fileName is tracked (staged or committed) by the current repository. */
+    public boolean isTracked(String fileName) {
+        return contains(fileName) && (!files.get(fileName)[1].isEmpty() || !files.get(fileName)[2].isEmpty());
+    }
 
     /** Updates the repo version of the file to match the staged version.
      * Used when committing. */

@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static gitlet.Utils.*;
@@ -25,6 +27,7 @@ public class Repository {
     /** HEAD pointer. Keeps track of current position in the commit tree. */
     public static final File HEAD = join(GITLET_DIR, "head");
 
+    /** Initialize a Gitlet repository in the current directory. */
    public static void init() {
        if (GITLET_DIR.exists()) {
            Utils.message("A Gitlet version-control system already exists in the current directory.");
@@ -110,8 +113,8 @@ public class Repository {
         }
 
         String branch = Utils.readContentsAsString(HEAD);
-        String prevCommit = getBranch(branch);
-        Tree tree = new Tree(index.getStaged());
+        String prevCommit = getHashFromBranch(branch);
+        Tree tree = new Tree(index.getStagedChanges());
         writeObject(getFileFromHash(tree.hash), tree);
         Commit commit = new Commit(prevCommit, tree.hash, commitMessage);
         writeObject(getFileFromHash(commit.hash), commit);
@@ -140,20 +143,52 @@ public class Repository {
         Utils.writeObject(INDEX, index);
     }
 
+    /** Returns a list of all the branches in this repository. */
+    public static List<String> getBranches() {
+        return Utils.plainFilenamesIn(REFS_DIR);
+    }
+
     /** Get the commit hash from the branch associated with branchName. */
-    public static String getBranch(String branchName) {
+    public static String getHashFromBranch(String branchName) {
         File branch = Utils.join(REFS_DIR, branchName);
         return readContentsAsString(branch);
     }
 
+    /** Print the status of files in the working directory relative to the repository. */
     public static void status() {
+        String head = Utils.readContentsAsString(HEAD);
+        System.out.println("=== Branches ===");
+        for (String branch : getBranches()) {
+            System.out.println(branch.equals(head) ? "*" + branch : branch);
+        }
+
         Index index = Utils.readObject(INDEX, Index.class);
-        index.dump();
+        System.out.println("\n=== Staged Files ===");
+        for (String file : index.getStagedChanges().keySet()) {
+            System.out.println(file);
+        }
+
+        System.out.println("\n=== Removed Files ===");
+        for (String file : index.getStagedRemovals().keySet()) {
+            System.out.println(file);
+        }
+
+        System.out.println("\n=== Modifications Not Staged For Commit ===");
+        Map<String, String> unstagedChanges = index.getUnstagedChanges();
+        for (String file : unstagedChanges.keySet()) {
+            System.out.println(file + (unstagedChanges.get(file).isEmpty() ? " (deleted)" : " (modified)"));
+        }
+
+        System.out.println("\n=== Untracked Files ==");
+        for (String file : index.getUntrackedFiles().keySet()) {
+            System.out.println(file);
+        }
     }
 
+    /** Print a log of all commits in the current branch, in reverse order. */
     public static void log() {
         String head = Utils.readContentsAsString(HEAD);
-        String commitHash = getBranch(head);
+        String commitHash = getHashFromBranch(head);
         while (!commitHash.isEmpty()) {
             File commitFile = Utils.getFileFromHash(commitHash);
             Commit currentCommit = Utils.readObject(commitFile, gitlet.Commit.class);
