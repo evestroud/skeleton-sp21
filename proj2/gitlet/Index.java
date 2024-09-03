@@ -2,7 +2,7 @@ package gitlet;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Set;
 
 /** Represents the index of the repository, which keeps track of the files and
@@ -21,7 +21,7 @@ public class Index implements Dumpable {
 
     /** Initializes the index. */
     public Index() {
-        files = new HashMap<>();
+        files = new TreeMap<>();
     }
 
     /** Returns a set of all the files currently tracked. */
@@ -95,7 +95,7 @@ public class Index implements Dumpable {
     /** Returns a map with file names as keys and the staged versions of those files
      * in the repository as values. Used when committing. */
     public Map<String, String> getStaged() {
-        Map<String, String> staged = new HashMap<>();
+        Map<String, String> staged = new TreeMap<>();
         for (String file: files.keySet()) {
             String stagedHash = files.get(file)[1];
             if (!stagedHash.isEmpty()) {
