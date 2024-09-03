@@ -52,6 +52,7 @@ public class Main {
             }
             case "log":
                 validateNumArgs(args, 1, 1);
+                Repository.log();
                 break;
             case "global-log":
                 validateNumArgs(args, 1, 1);

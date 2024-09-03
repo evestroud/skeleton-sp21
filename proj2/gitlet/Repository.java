@@ -150,4 +150,19 @@ public class Repository {
         Index index = Utils.readObject(INDEX, Index.class);
         index.dump();
     }
+
+    public static void log() {
+        String head = Utils.readContentsAsString(HEAD);
+        String commitHash = getBranch(head);
+        while (!commitHash.isEmpty()) {
+            File commitFile = Utils.getFileFromHash(commitHash);
+            Commit currentCommit = Utils.readObject(commitFile, gitlet.Commit.class);
+            System.out.println("===");
+            System.out.println("commit " + currentCommit.hash);
+            System.out.println("Date: " + currentCommit.timestamp);
+            System.out.println(currentCommit.message);
+            System.out.println();
+            commitHash = currentCommit.parent;
+        }
+    }
 }
